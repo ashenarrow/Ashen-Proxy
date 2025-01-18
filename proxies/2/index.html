@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ashen Proxy 2</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+
+        h1 {
+            font-size: 3em;
+            text-shadow: 0 0 5px #fff, 0 0 10px #00ffff;
+        }
+
+        #r4-widget-form {
+            width: 80%;
+            margin: 20px auto;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            padding: 15px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        #r4-widget-form:before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 20s linear infinite;
+            border-radius: 10px;
+        }
+
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s linear infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(1); }
+            25% { opacity: 0.7; transform: scale(1.2); }
+            50% { opacity: 0.1; transform: scale(0.8); }
+            75% { opacity: 0.9; transform: scale(1.1); }
+            100% { opacity: 0.2; transform: scale(1); }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            filter: blur(1px);
+            opacity: 0;
+            z-index: 2;
+            animation: shoot 5s linear 1;
+        }
+
+        .shooting-star .trail {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform-origin: 0% 50%;
+            height: 1px;
+            background: linear-gradient(to left, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+        }
+
+        @keyframes shoot {
+            0% { transform: translate(var(--start-x), var(--start-y)); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(var(--end-x), var(--end-y)); opacity: 0; }
+        }
+    </style>
+    <script async src="https://www.testdomainname.xyz/widget/widget.js" data-id="r4-widget-connection"></script>
+</head>
+<body>
+    <h1>Ashen Proxy 2</h1>
+    <div id="r4-widget-form"></div>
+
+    <script>
+        const numStars = 100;
+        const body = document.body;
+
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = `${Math.random() * 3 + 1}px`;
+            star.style.height = star.style.width;
+            star.style.top = `${Math.random() * 100}vh`;
+            star.style.left = `${Math.random() * 100}vw`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            body.appendChild(star);
+        }
+
+        const createShootingStar = () => {
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+            const angle = Math.random() * 360;
+            const distance = Math.max(window.innerWidth, window.innerHeight);
+
+            const endX = startX + distance * Math.cos(angle * Math.PI / 180);
+            const endY = startY + distance * Math.sin(angle * Math.PI / 180);
+            const duration = Math.random() * 2 + 3;
+
+            const shootingStar = document.createElement('div');
+            shootingStar.classList.add('shooting-star');
+            shootingStar.style.setProperty("--start-x", `${startX}px`);
+            shootingStar.style.setProperty("--start-y", `${startY}px`);
+            shootingStar.style.setProperty("--end-x", `${endX}px`);
+            shootingStar.style.setProperty("--end-y", `${endY}px`);
+            shootingStar.style.animation = `shoot ${duration}s linear 1`;
+            body.appendChild(shootingStar);
+
+            const trail = document.createElement('div');
+            trail.classList.add('trail');
+            trail.style.width = '50px';
+            trail.style.transform = `rotate(${angle}deg)`;
+            shootingStar.appendChild(trail);
+
+            shootingStar.addEventListener('animationend', () => {
+                shootingStar.remove();
+            });
+        };
+
+        setInterval(createShootingStar, 1000);
+    </script>
+</body>
+</html>

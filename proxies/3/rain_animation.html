@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rain Animation</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #1e1e2f;
+    }
+
+    .rain {
+      position: absolute;
+      width: 3px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 1px;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const numberOfDrops = 300;
+    const body = document.body;
+    const gravity = 0.03;
+    const terminalVelocity = 10;
+    const mouseInfluence = 0.01; 
+    const interactionRadius = 50; 
+    const airResistance = 0.015;
+    const windSpeed = 0.002; 
+    const windDirection = Math.PI / 2; 
+
+    const drops = [];
+
+    class Drop {
+      constructor() {
+        this.x = Math.random() * window.innerWidth + Math.random() * 100 - 50; 
+        this.y = Math.random() * -3000;
+        this.vx = (Math.random() - 0.5) * 0.3; 
+        this.vy = 0;
+        this.size = 10; 
+        this.element = document.createElement("div");
+        this.element.classList.add("rain");
+        body.appendChild(this.element);
+      }
+
+      update() {
+        this.vy += gravity;
+
+        // Calculate wind force
+        const windForceX = windSpeed * Math.cos(windDirection);
+
+        // Calculate air resistance force
+        const airResistanceForce = -airResistance * this.vy;
+
+        // Apply gravity, air resistance, and wind force
+        this.vy += gravity + airResistanceForce;
+        this.vx += windForceX;
+
+        // Limit terminal velocity
+        if (this.vy > terminalVelocity) {
+          this.vy = terminalVelocity;
+        }
+
+        // Mouse interaction
+        const dx = mouseX - this.x;
+        const dy = mouseY - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < interactionRadius) { 
+          if (this.size > 5) { 
+            this.vy *= 0.7; 
+            this.vx *= 0.7; 
+            this.size *= 0.6; 
+
+            drops.push(new Drop(
+              this.x, 
+              this.y, 
+              this.vx + (Math.random() * 0.4 - 0.2), 
+              this.vy + (Math.random() * 0.4 - 0.2), 
+              this.size 
+            ));
+
+            drops.push(new Drop(
+              this.x, 
+              this.y, 
+              this.vx - (Math.random() * 0.4 - 0.2), 
+              this.vy + (Math.random() * 0.4 - 0.2),
+              this.size 
+            ));
+
+            drops.push(new Drop(
+              this.x, 
+              this.y, 
+              this.vx + (Math.random() * 0.4 - 0.2), 
+              this.vy + (Math.random() * 0.4 - 0.2),
+              this.size 
+            )); 
+          }
+        }
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.x = Math.max(0, Math.min(window.innerWidth, this.x));
+
+        if (this.y > window.innerHeight) {
+          this.x = Math.random() * window.innerWidth + Math.random() * 100 - 50; 
+          this.y = Math.random() * -3000;
+          this.vx = (Math.random() - 0.5) * 0.3; 
+          this.vy = 0; 
+          this.size = 10; 
+        }
+
+        this.element.style.left = `${this.x}px`;
+        this.element.style.top = `${this.y}px`;
+        this.element.style.height = `${this.size}px`; 
+      }
+    }
+
+    for (let i = 0; i < numberOfDrops; i++) {
+      drops.push(new Drop());
+    }
+
+    function update() {
+      requestAnimationFrame(update);
+
+      drops.forEach(drop => drop.update());
+    }
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.addEventListener("mousemove", (event) => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+    });
+
+    update(); 
+
+  </script>
+</body>
+</html>

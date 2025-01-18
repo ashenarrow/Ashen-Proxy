@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ashen Proxy 4</title>
+  <script async src="https://www.testdomainname.xyz/widget/widget.js" data-id="r4-widget-connection"></script> 
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+      font-family: 'Courier New', monospace; /* Example font */
+      color: #808080; /* Example color */ 
+    }
+
+    .square {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 2px;
+      transform: rotate(45deg);
+      box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
+      animation: neon-glow 4s infinite;
+    }
+
+    @keyframes neon-glow {
+      0% {
+        box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
+      }
+      25% {
+        box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff;
+      }
+      50% {
+        box-shadow: 0 0 10px #0000ff, 0 0 20px #0000ff, 0 0 30px #0000ff, 0 0 40px #0000ff;
+      }
+      75% {
+        box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #ff00ff;
+      }
+      100% {
+        box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Ashen Proxy 4</h1>
+  <div style="width: 80%;">
+    <div id="r4-widget-form"></div>
+  </div>
+
+  <h2 style="color: #808080; font-family: 'Courier New', monospace;"></h2> 
+
+  <script>
+    class Square {
+      constructor() {
+        this.element = document.createElement('div');
+        this.element.classList.add('square');
+        document.body.appendChild(this.element);
+
+        this.x = this.getRandomPosition(window.innerWidth);
+        this.y = this.getRandomPosition(window.innerHeight);
+        this.velocityX = (Math.random() - 0.5) * 2;
+        this.velocityY = (Math.random() - 0.5) * 2; 
+
+        this.color = this.getRandomColor();
+        this.element.style.borderColor = this.color;
+      }
+
+      getRandomPosition(boundary) {
+        let position;
+        do {
+          position = Math.random() * boundary;
+        } while (this.checkOverlapping(position));
+        return position;
+      }
+
+      checkOverlapping(positionX) {
+        for (let i = 0; i < squares.length; i++) {
+          const otherSquare = squares[i];
+          if (Math.abs(positionX - otherSquare.x) < 20) { 
+            return true; 
+          }
+        }
+        return false; 
+      }
+
+      getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+
+      update() {
+        this.x += this.velocityX;
+        this.y += this.velocityY;
+
+        // Collision detection with other squares
+        for (let i = 0; i < squares.length; i++) {
+          if (squares[i] !== this) { 
+            const otherSquare = squares[i];
+            const dx = this.x - otherSquare.x;
+            const dy = this.y - otherSquare.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 20) { 
+              const nx = dx / distance;
+              const ny = dy / distance;
+              const rvx = this.velocityX - otherSquare.velocityX;
+              const rvy = this.velocityY - otherSquare.velocityY;
+              const j = 2 * (rvx * nx + rvy * ny) / (1 + 1); 
+
+              this.velocityX -= j * nx;
+              this.velocityY -= j * ny;
+              otherSquare.velocityX += j * nx;
+              otherSquare.velocityY += j * ny;
+            }
+          }
+        }
+
+        // Bounce off edges
+        if (this.x < 10 || this.x > window.innerWidth - 10) {
+          this.velocityX *= -1;
+        }
+        if (this.y < 10 || this.y > window.innerHeight - 10) {
+          this.velocityY *= -1;
+        }
+
+        this.element.style.left = this.x + 'px';
+        this.element.style.top = this.y + 'px';
+      }
+    }
+
+    const numInitialSquares = 30; 
+    const squares = [];
+
+    for (let i = 0; i < numInitialSquares; i++) {
+      squares.push(new Square());
+    }
+
+    function animate() {
+      for (let i = 0; i < squares.length; i++) {
+        squares[i].update();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+  </script>
+
+</body>
+</html>
